@@ -1,14 +1,14 @@
-import { Users } from 'src/modules/users/entities/users.entity';
+import { User } from 'src/modules/users/entities/users.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('address')
 export class Address {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,8 +28,11 @@ export class Address {
   @Column()
   number: string;
 
-  @OneToOne(() => Users, (user) => user.address_id)
-  user: Users;
+  @Column()
+  city: string;
+
+  @OneToMany(() => User, (user) => user.address_id)
+  user: User[];
 
   @CreateDateColumn()
   created_at: Date;
