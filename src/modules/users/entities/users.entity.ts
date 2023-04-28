@@ -3,12 +3,12 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
-export class Users {
+@Entity('user')
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -24,7 +24,12 @@ export class Users {
   @Column()
   date_birth: Date;
 
-  @OneToOne(() => Address)
-  @JoinColumn()
+  @ManyToOne((type) => Address, (address) => address.user, {
+    cascade: true,
+    nullable: false,
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn({ name: 'address_id' })
   address_id: Address;
 }
