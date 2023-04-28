@@ -12,4 +12,6 @@ export const dataSourceConfig = new DataSource({
   entities: [],
   migrations: ['dist/shared/migrations/*.js'],
   synchronize: false,
+  connectTimeoutMS: 10000,
+  logger: 'simple-console',
 });

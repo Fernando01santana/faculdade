@@ -10,7 +10,7 @@ import { dataSourceConfig } from './dataSourceConfig';
       provide: DataSource,
       useFactory: async () => {
         await dataSourceConfig.initialize();
-        return dataSourceConfig;
+        return;
       },
     },
   ],
