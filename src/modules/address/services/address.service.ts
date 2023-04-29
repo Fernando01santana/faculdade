@@ -6,14 +6,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateAddress } from '../dto/create.dto';
 import { Address } from '../entities/Address.entity';
 import { AddressRepositorie } from '../repositories/address.repositorie';
-import { GetAddress } from './getAddress.service';
 
 @Injectable()
 export class AddressService {
-  constructor(
-    private readonly addressRepository: AddressRepositorie,
-    private readonly getAddress: GetAddress,
-  ) {}
+  constructor(private readonly addressRepository: AddressRepositorie) {}
 
   async create(data: CreateAddress): Promise<Address> {
     try {

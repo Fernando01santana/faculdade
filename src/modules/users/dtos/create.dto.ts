@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { CreateAddress } from 'src/modules/address/dto/create.dto';
+import { CreateAddress } from '../../address/dto/create.dto';
 
 export class CreateUser {
   @IsString()

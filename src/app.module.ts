@@ -26,6 +26,7 @@ import { UsersModule } from './modules/users/users.module';
     }),
     UsersModule,
     AddresssModule,
+    TypeOrmModule.forFeature([Address, User]),
   ],
 })
 export class AppModule {}

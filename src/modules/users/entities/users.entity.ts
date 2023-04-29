@@ -1,4 +1,3 @@
-import { Address } from 'src/modules/address/entities/address.entity';
 import {
   Column,
   Entity,
@@ -6,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Address } from '../../address/entities/address.entity';
 
 @Entity('user')
 export class User {
