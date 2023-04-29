@@ -1,4 +1,4 @@
-import { Address } from 'src/modules/address/entities/Address.entity';
+import { Address } from 'src/modules/address/entities/address.entity';
 import {
   Column,
   Entity,
