@@ -13,7 +13,7 @@
       "start:dev": "nest start --watch",
       "start:debug": "nest start --debug --watch",
       "start:prod": "node dist/main",
-      "lint": "eslint '**/*.{ts,tsx}'",
+      "lint": "eslint .",
       "test": "jest",
       "test:watch": "jest --watch",
       "test:cov": "jest --coverage",
@@ -34,6 +34,7 @@
       "apollo-datasource": "^3.3.2",
       "class-validator": "^0.14.0",
       "dotenv": "^16.0.3",
+      "husky": "^8.0.3",
       "node-fetch": "^3.3.1",
       "pg": "^8.10.0",
       "reflect-metadata": "^0.1.13",
@@ -80,5 +81,11 @@
       ],
       "coverageDirectory": "../coverage",
       "testEnvironment": "node"
+   },
+   "husky": {
+      "hooks": {
+         "pre-commit": "npm run lint",
+         "pre-push": "npm run test"
+      }
    }
 }
