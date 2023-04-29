@@ -1,7 +1,11 @@
 import { Test } from '@nestjs/testing';
+import {
+  userCreate,
+  userCreatedService,
+  userUpdated,
+} from '../../../shared/constantes/constantesTest';
 import StringToDate from '../../../shared/utils/stringToDate';
 import { AddressRepositorie } from '../../address/repositories/address.repositorie';
-import { User } from '../entities/users.entity';
 import { UsersRepository } from '../repositories/user.repositorie';
 import { UsersService } from './users.service';
 
@@ -13,59 +17,6 @@ describe('UsersService', () => {
 
   let userInsertFromTests;
 
-  const userCreatedService: User = {
-    address_id: {
-      id: '1',
-      street: '123 Main St',
-      city: 'Anytown',
-      state: 'AS',
-      zip_code: '12345',
-      neighborhood: 'teste',
-      number: '1',
-      created_at: new Date(),
-      updated_at: new Date(),
-      user: null,
-    },
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    document: '123456789',
-    date_birth: new Date(),
-    id: '1',
-  };
-
-  const userUpdated: User = {
-    address_id: {
-      id: '1',
-      street: 'updated street',
-      city: 'update',
-      state: 'CE',
-      zip_code: '123',
-      neighborhood: 'teste 1',
-      number: '2',
-      created_at: new Date(),
-      updated_at: new Date(),
-      user: null,
-    },
-    name: 'Mario Bros',
-    email: 'johndoe@example.com',
-    document: '00000',
-    date_birth: new Date(),
-    id: '1',
-  };
-  const userCreate = {
-    address: {
-      street: '123 Main St',
-      city: 'Anytown',
-      state: 'AS',
-      zip_code: '12345',
-      neighborhood: 'teste',
-      number: '1',
-    },
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    document: '123456789',
-    date_birth: '17/06/2001',
-  };
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -152,9 +103,7 @@ describe('UsersService', () => {
 
   describe('List all users', () => {
     it('should return all users in database', async () => {
-      jest
-        .spyOn(usersRepository, 'list')
-        .mockResolvedValue([userCreatedService]);
+      jest.spyOn(usersRepository, 'list').mockResolvedValue(userCreatedService);
 
       const result = await usersService.list();
       expect(Array.isArray(result)).toBe(true);
@@ -165,10 +114,10 @@ describe('UsersService', () => {
     it('Remove user', async () => {
       jest
         .spyOn(usersRepository, 'findOne')
-        .mockResolvedValue(userCreatedService);
+        .mockResolvedValue(userCreatedService[0]);
 
       jest.spyOn(usersRepository, 'remove').mockResolvedValue(null);
-      const result = await usersService.remove(userCreatedService.id);
+      const result = await usersService.remove(userCreatedService[0].id);
       expect(result).toBeNull();
     });
 
@@ -186,7 +135,7 @@ describe('UsersService', () => {
     it('Shold return user and return user updated', async () => {
       jest
         .spyOn(usersRepository, 'findOne')
-        .mockResolvedValue(userCreatedService);
+        .mockResolvedValue(userCreatedService[0]);
       jest.spyOn(usersRepository, 'update').mockResolvedValue(userUpdated);
       jest
         .spyOn(addressRepository, 'update')
@@ -194,7 +143,7 @@ describe('UsersService', () => {
 
       const result = await usersService.update(
         userCreate,
-        userCreatedService.id,
+        userCreatedService[0].id,
       );
       expect(result).toBeDefined();
     });
