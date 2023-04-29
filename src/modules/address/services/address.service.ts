@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 import { CreateAddress } from '../dto/create.dto';
-import { Address } from '../entities/Address.entity';
+import { Address } from '../entities/address.entity';
 import { AddressRepositorie } from '../repositories/address.repositorie';
 
 @Injectable()

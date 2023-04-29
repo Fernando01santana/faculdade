@@ -20,7 +20,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/')
-  async create(@Body() data: CreateUser): Promise<User[]> {
+  async create(@Body() data: CreateUser): Promise<User> {
     const user = await this.usersService.create(data);
     return user;
   }

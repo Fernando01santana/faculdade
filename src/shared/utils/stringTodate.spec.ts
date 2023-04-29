@@ -18,8 +18,15 @@ describe('StringToDate', () => {
   });
 
   it('should throw an error when given an invalid string date', () => {
+    const stringToDate = new StringToDate();
     const dateString = '2023-04-29'; // invalid format
-
-    expect(() => stringToDate.convert(dateString)).toThrow(Error);
+    try {
+      stringToDate.convert(dateString);
+      // Se chegar aqui, o teste falhou porque não houve exceção
+      fail('Expected exception to be thrown');
+    } catch (e) {
+      // Se chegar aqui, o teste passou
+      expect(e).toBeInstanceOf(Error);
+    }
   });
 });

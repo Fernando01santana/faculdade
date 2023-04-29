@@ -1,4 +1,4 @@
-import { User } from 'src/modules/users/entities/users.entity';
+import { User } from '../../modules/users/entities/users.entity';
 
 export const userCreatedService: User[] = [
   {
