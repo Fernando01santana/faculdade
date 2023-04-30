@@ -8,8 +8,7 @@ RUN npm install
 COPY . .
 
 RUN npm run build\
-    npm run migration:run\
-    npm run test
+    chmod +x start.sh
 
 EXPOSE 6363
-CMD [ "node","dist/main" ]
+CMD [ "node","build/main" ]

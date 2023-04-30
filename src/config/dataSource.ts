@@ -14,6 +14,6 @@ export const dataSourceConfig = new DataSource({
   password: configService.get('RDS_PASSWORD'),
   database: configService.get('RDS_DATABASE'),
   entities: [User, Address],
-  migrations: ['dist/shared/migrations/*.js'],
+  migrations: ['build/shared/migrations/*.js'],
   synchronize: false,
 });

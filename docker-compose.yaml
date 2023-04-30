@@ -1,38 +1,52 @@
-version: '1'
+version: '3'
 
 services:
   app:
     image: api-faculdade
     container_name: api-faculdade
+    restart: unless-stopped
+    environment:
+      - RDS_HOST=db
+      - RDS_DATABASE=faculdade
+      - RDS_PORT=5432
+      - RDS_USERNAME=postgres
+      - RDS_PASSWORD=postgres
     ports:
       - '3000:3000'
-    command:  node ./dist/main
+    command: ["sh","./start.sh"]
     volumes:
       - .:/home/node/app
     depends_on:
       - db
+    networks:
+      - app-network
   
   db:
     image: postgres:alpine
-    container_name: api-db
+    container_name: database-faculdade
     restart: always
     tty: true
     ports:
-      - '5432:5432'
+      - '55000:5432'
     volumes:
       - .docker/dbdata:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=postgrespw
-      - POSTGRES_DB=postgres
+    networks:
+      - app-network
     
   pgadmin:
     image: dpage/pgadmin4
-    container_name: api-pg-lab
+    container_name: pgadmin-faculdade
     tty: true
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - '8000:80'
     depends_on:
       - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
