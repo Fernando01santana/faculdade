@@ -1,4 +1,4 @@
-FROM node:16.14.0-alpine
+FROM --platform=linux/arm64 node:lts-alpine
 
 WORKDIR /fernando/src/app
 COPY package*.json ./
