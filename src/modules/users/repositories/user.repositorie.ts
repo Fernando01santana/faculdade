@@ -57,8 +57,17 @@ export class UsersRepository {
 
   async remove(user: User): Promise<void> {
     try {
-      await this.usersRepository.delete(user);
+      await this.usersRepository.remove(user);
       return;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  async findByEmail(email: string): Promise<User[]> {
+    try {
+      const user = await this.usersRepository.find({ where: { email: email } });
+      return user;
     } catch (error) {
       throw new Error(error.message);
     }

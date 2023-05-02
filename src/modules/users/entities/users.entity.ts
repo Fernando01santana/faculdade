@@ -22,6 +22,9 @@ export class User {
   email: string;
 
   @Column()
+  password: string;
+
+  @Column()
   date_birth: Date;
 
   @ManyToOne((type) => Address, (address) => address.user, {

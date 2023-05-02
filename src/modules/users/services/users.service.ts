@@ -26,6 +26,7 @@ export class UsersService {
         document: data.document,
         email: data.email,
         name: data.name,
+        password: data.password,
       };
 
       const user = await this.usersRepository.create(createUser);
@@ -57,7 +58,7 @@ export class UsersService {
     if (!user) {
       throw new Error('Usuario nao encontrado');
     }
-
-    return this.usersRepository.remove(user);
+    await this.usersRepository.remove(user);
+    return;
   }
 }

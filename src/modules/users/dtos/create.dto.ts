@@ -12,6 +12,9 @@ export class CreateUser {
   email: string;
 
   @IsString()
+  password: string;
+
+  @IsString()
   date_birth: string;
 
   @IsNotEmpty()

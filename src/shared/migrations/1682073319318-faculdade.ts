@@ -26,6 +26,10 @@ export class Faculdade1682073319318 implements MigrationInterface {
             type: 'varchar',
           },
           {
+            name: 'password',
+            type: 'varchar',
+          },
+          {
             name: 'date_birth',
             type: 'date',
           },

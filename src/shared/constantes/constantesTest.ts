@@ -19,6 +19,7 @@ export const userCreatedService: User[] = [
     document: '123456789',
     date_birth: new Date(),
     id: '1',
+    password: '',
   },
 ];
 
@@ -40,6 +41,7 @@ export const userUpdated: User = {
   document: '00000',
   date_birth: new Date(),
   id: '1',
+  password: '',
 };
 export const userCreate = {
   address: {
@@ -54,6 +56,7 @@ export const userCreate = {
   email: 'johndoe@example.com',
   document: '123456789',
   date_birth: '17/06/2001',
+  password: '',
 };
 
 export const userCreateRepository = {
@@ -69,4 +72,5 @@ export const userCreateRepository = {
   email: 'johndoe@example.com',
   document: '123456789',
   date_birth: new Date(),
+  password: '',
 };
