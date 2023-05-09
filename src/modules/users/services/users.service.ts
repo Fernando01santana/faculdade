@@ -3,18 +3,22 @@ https://docs.nestjs.com/providers#services
 */
 
 import { Injectable } from '@nestjs/common';
+import { config } from 'dotenv';
 import StringToDate from '../../../shared/utils/stringToDate';
+import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { AddressRepositorie } from '../../address/repositories/address.repositorie';
 import { CreateUser } from '../dtos/create.dto';
 import { User } from '../entities/users.entity';
 import { UsersRepository } from '../repositories/user.repositorie';
 
+config();
 @Injectable()
 export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly addressRepository: AddressRepositorie,
     private stringToDate: StringToDate,
+    private uploadS3: StorageS3,
   ) {}
   async create(data: CreateUser): Promise<User> {
     try {
@@ -27,6 +31,7 @@ export class UsersService {
         email: data.email,
         name: data.name,
         password: data.password,
+        link_image: process.env.IMAGE_DEFAULT,
       };
 
       const user = await this.usersRepository.create(createUser);
@@ -60,5 +65,21 @@ export class UsersService {
     }
     await this.usersRepository.remove(user);
     return;
+  }
+
+  async uploadImageProfile(file: any, id: string): Promise<string> {
+    try {
+      let user = await this.usersRepository.findOne(id);
+      if (!user) {
+        throw new Error('Nenhum usuario encontrado');
+      }
+
+      const link = await this.uploadS3.uploadFile(file, id);
+
+      await this.usersRepository.updateImageProfile(link, id);
+      return link;
+    } catch (error) {
+      throw new Error('Erro ao atualizar imagem de perfil.');
+    }
   }
 }

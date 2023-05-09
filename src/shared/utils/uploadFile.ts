@@ -1,6 +1,6 @@
 import * as aws from 'aws-sdk';
 
-export class AwsService {
+export class StorageS3 {
   async uploadFile(file: any, _id: string) {
     const s3 = new aws.S3({
       region: process.env.AWS_REGION,
@@ -8,16 +8,18 @@ export class AwsService {
       secretAccessKey: process.env.AWS_SECRET_ACESS_KEY,
     });
 
+    const date = Date.now();
     const extensionFile = file.originalname.split('.')[1];
-    const nameFile = `${_id}.${extensionFile}`;
+    const nameFile = date + `${_id}.${extensionFile}`;
 
     const params = {
       Body: file.buffer,
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: nameFile,
+      ACL: 'public-read',
     };
 
-    const data = await s3
+    await s3
       .putObject(params)
       .promise()
       .then(
@@ -30,6 +32,6 @@ export class AwsService {
           return err;
         },
       );
-    return data;
+    return 'https://faculdade-api.s3.amazonaws.com/' + nameFile;
   }
 }

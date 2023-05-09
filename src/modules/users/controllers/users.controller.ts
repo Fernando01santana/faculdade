@@ -10,14 +10,21 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { CreateUser } from '../dtos/create.dto';
 import { User } from '../entities/users.entity';
 import { UsersService } from '../services/users.service';
 
 @Controller('/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly awsService: StorageS3,
+  ) {}
 
   @Post('/')
   async create(@Body() data: CreateUser): Promise<User> {
@@ -40,5 +47,15 @@ export class UsersController {
   @Delete('/remove/:id')
   async delete(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
+  }
+
+  @Post('/image/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id,
+  ): Promise<{ url: string }> {
+    const url = await this.usersService.uploadImageProfile(file, id);
+    return { url };
   }
 }

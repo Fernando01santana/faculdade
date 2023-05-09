@@ -25,6 +25,9 @@ export class User {
   password: string;
 
   @Column()
+  link_image: string;
+
+  @Column()
   date_birth: Date;
 
   @ManyToOne((type) => Address, (address) => address.user, {

@@ -1,6 +1,7 @@
 .idea/
 .vscode/
 .docker/
+.env
 node_modules/
 coverage/
 build/

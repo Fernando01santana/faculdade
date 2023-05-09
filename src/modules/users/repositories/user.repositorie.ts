@@ -55,6 +55,17 @@ export class UsersRepository {
     }
   }
 
+  async updateImageProfile(link_image: string, id: string): Promise<User> {
+    try {
+      const user = await this.findOne(id);
+      user.link_image = link_image;
+      this.usersRepository.save(user);
+      return user;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   async remove(user: User): Promise<void> {
     try {
       await this.usersRepository.remove(user);

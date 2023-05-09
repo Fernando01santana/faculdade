@@ -20,6 +20,7 @@ export const userCreatedService: User[] = [
     date_birth: new Date(),
     id: '1',
     password: '',
+    link_image: '',
   },
 ];
 
@@ -42,6 +43,7 @@ export const userUpdated: User = {
   date_birth: new Date(),
   id: '1',
   password: '',
+  link_image: '',
 };
 export const userCreate = {
   address: {
