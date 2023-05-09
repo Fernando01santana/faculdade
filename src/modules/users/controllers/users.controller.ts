@@ -58,4 +58,10 @@ export class UsersController {
     const url = await this.usersService.uploadImageProfile(file, id);
     return { url };
   }
+
+  @Delete('/image/:id')
+  async removeImage(@Param('id') id): Promise<void> {
+    await this.usersService.removeImageProfile(id);
+    return;
+  }
 }
