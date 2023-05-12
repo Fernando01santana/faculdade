@@ -2,7 +2,7 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from '../../users/repositories/user.repositorie';
 
@@ -17,7 +17,7 @@ export class AuthService {
     const user = await this.usersRepository.findByEmail(data.email);
 
     if (user.length != 1) {
-      throw new Error('Usuario nao encontrado');
+      throw new HttpException('Usuario nao encontrado ', HttpStatus.NOT_FOUND);
     }
     const payload = { email: data.emal };
     const accessToken = this.jwtService.sign(payload);

@@ -2,13 +2,8 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { config } from 'dotenv';
-import { ExceptionS3ErrorRemoveFile } from '../../../shared/exceptions/S3/s3.exception';
-import {
-  ExceptionInternalError,
-  ExceptionUserNotFount,
-} from '../../../shared/exceptions/users/user.exceptions';
 import StringToDate from '../../../shared/utils/stringToDate';
 import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { AddressRepositorie } from '../../address/repositories/address.repositorie';
@@ -42,8 +37,9 @@ export class UsersService {
       const user = await this.usersRepository.create(createUser);
       return user;
     } catch (error) {
-      throw new ExceptionInternalError(
-        'Erro ao atualizar usuario: ' + error.message,
+      throw new HttpException(
+        'Erro ao criar usuario: ' + error.message,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -61,8 +57,9 @@ export class UsersService {
       await this.addressRepository.update(data.address, user.address_id.id);
       return this.usersRepository.update(data, id);
     } catch (error) {
-      throw new ExceptionInternalError(
+      throw new HttpException(
         'Erro ao atualizar usuario: ' + error.message,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -76,8 +73,9 @@ export class UsersService {
       await this.usersRepository.remove(user);
       return;
     } catch (error) {
-      throw new ExceptionInternalError(
+      throw new HttpException(
         'Erro ao remover usuario: ' + error.message,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -95,22 +93,26 @@ export class UsersService {
       await this.usersRepository.updateImageProfile(link, id);
       return link;
     } catch (error) {
-      throw new ExceptionInternalError('Erro ao atualizar imagem: ');
+      throw new HttpException(
+        'Erro ao atualizar Imagem: ' + error.message,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async removeImageProfile(id: string): Promise<void> {
     const user = await this.usersRepository.findOne(id);
     if (!user) {
-      throw new ExceptionUserNotFount('Usuario nao encontrado');
+      throw new HttpException('Usuario nao encontrado: ', HttpStatus.NOT_FOUND);
     }
     try {
       let filename = 'username-' + user.id;
       await this.uploadS3.removeFile(filename);
       return;
     } catch (error) {
-      throw new ExceptionS3ErrorRemoveFile(
-        'Erro ao remover imagem do S3: ' + error.message,
+      throw new HttpException(
+        'Erro ao atualizar imagem: ' + error.message,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
