@@ -4,6 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { config } from 'dotenv';
+import RedisService from '../../../shared/redis/redis';
 import StringToDate from '../../../shared/utils/stringToDate';
 import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { AddressRepositorie } from '../../address/repositories/address.repositorie';
@@ -19,6 +20,7 @@ export class UsersService {
     private readonly addressRepository: AddressRepositorie,
     private stringToDate: StringToDate,
     private uploadS3: StorageS3,
+    private redis: RedisService,
   ) {}
   async create(data: CreateUser): Promise<User> {
     try {
@@ -34,8 +36,9 @@ export class UsersService {
         link_image: process.env.IMAGE_DEFAULT,
       };
 
-      const user = await this.usersRepository.create(createUser);
-      return user;
+      const dataUser = await this.usersRepository.create(createUser);
+      await this.redis.createKey(dataUser);
+      return dataUser[0];
     } catch (error) {
       throw new HttpException(
         'Erro ao criar usuario: ' + error.message,
@@ -45,7 +48,23 @@ export class UsersService {
   }
 
   async list(): Promise<User[]> {
-    return this.usersRepository.list();
+    const usersByRedis = await this.redis.getAllCustomers();
+    const usersByDatabase = await this.usersRepository.list();
+
+    let users = [];
+    if (usersByRedis) {
+      for (let index = 0; index < usersByRedis.length; index++) {
+        const element = JSON.parse(usersByRedis[index]);
+        users.push(element);
+      }
+      return users;
+    }
+
+    for (let index = 0; index < usersByDatabase.length; index++) {
+      const element = usersByDatabase[index];
+      await this.redis.createKey(element);
+    }
+    return usersByDatabase;
   }
 
   async update(data: CreateUser, id: string): Promise<User> {

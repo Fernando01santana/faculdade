@@ -21,11 +21,11 @@ export class UsersRepository {
     }
   }
   //CREATE: cria um usuario no sistema e vincula o address a esse usuario x
-  async create(data: any): Promise<User> {
+  async create(data: any): Promise<User[]> {
     try {
-      const userCreate = await this.usersRepository.create(data);
+      const userCreate = this.usersRepository.create(data);
       await this.usersRepository.save(userCreate);
-      return userCreate[0];
+      return userCreate;
     } catch (error) {
       throw error;
     }

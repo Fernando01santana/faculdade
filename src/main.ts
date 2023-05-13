@@ -5,7 +5,11 @@ import { AuthMiddleware } from './shared/decorators/middlewares/tokenValidation.
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(new AuthMiddleware().use);
+  app.use('/users/', new AuthMiddleware().use);
+  app.use('/users/list', new AuthMiddleware().use);
+  app.use('/users/update/:id', new AuthMiddleware().use);
+  app.use('/users/remove/:id', new AuthMiddleware().use);
+  app.use('/users/image/:id', new AuthMiddleware().use);
 
   await app.listen(3000);
 }

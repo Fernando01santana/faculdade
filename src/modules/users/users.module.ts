@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import RedisService from '../../shared/redis/redis';
 import StringToDate from '../../shared/utils/stringToDate';
 import { StorageS3 } from '../../shared/utils/uploadFile';
 import { Address } from '../address/entities/address.entity';
@@ -20,6 +21,7 @@ import { UsersService } from './services/users.service';
     StringToDate,
     UsersRepository,
     StorageS3,
+    RedisService,
   ],
   exports: [UsersModule, TypeOrmModule.forFeature([User, Address])],
 })
