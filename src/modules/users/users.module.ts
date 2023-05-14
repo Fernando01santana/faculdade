@@ -1,5 +1,8 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RateLimiterModule } from 'nestjs-rate-limiter';
 import RedisService from '../../shared/redis/redis';
 import StringToDate from '../../shared/utils/stringToDate';
 import { StorageS3 } from '../../shared/utils/uploadFile';
@@ -12,7 +15,14 @@ import { UsersRepository } from './repositories/user.repositorie';
 import { UsersService } from './services/users.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Address]), StringToDate],
+  imports: [
+    TypeOrmModule.forFeature([User, Address]),
+    StringToDate,
+    RateLimiterModule.register({
+      points: 1,
+      duration: 1,
+    }),
+  ],
   controllers: [UsersController],
   providers: [
     UsersService,
@@ -22,6 +32,10 @@ import { UsersService } from './services/users.service';
     UsersRepository,
     StorageS3,
     RedisService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
   exports: [UsersModule, TypeOrmModule.forFeature([User, Address])],
 })

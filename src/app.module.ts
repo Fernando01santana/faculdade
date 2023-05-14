@@ -1,14 +1,17 @@
-import { Module } from '@nestjs/common';
-import { AuthModule } from './modules/auth/auth.module';
-// import { TypeOrmModule } from './config/datasource/typeOrmModule';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from './config/typeOrmMudule';
 import { AddresssModule } from './modules/address/address.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      ttl: 1,
+      limit: 1,
+    }),
     AuthModule,
     ConfigModule.forRoot(),
     TypeOrmModule,
@@ -22,8 +25,8 @@ import { UsersModule } from './modules/users/users.module';
       }),
     }),
     ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
+      ttl: 1,
+      limit: 1,
     }),
   ],
 })
