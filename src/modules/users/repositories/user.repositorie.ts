@@ -39,6 +39,14 @@ export class UsersRepository {
     }
   }
 
+  async findDocument(document: string): Promise<User> {
+    try {
+      return this.usersRepository.findOne({ where: { document: document } });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
   //UPDATE: atualiza um usuario
   async update(data: CreateUser, id: string): Promise<User> {
     try {

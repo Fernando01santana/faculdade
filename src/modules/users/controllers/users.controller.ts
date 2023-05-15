@@ -13,6 +13,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { CreateUser } from '../dtos/create.dto';
@@ -26,15 +27,29 @@ export class UsersController {
     private readonly awsService: StorageS3,
   ) {}
 
+  @EventPattern('create-user')
   @Post('/')
-  async create(@Body() data: CreateUser): Promise<User> {
+  async create(
+    @Payload() data: CreateUser,
+    @Ctx() context: RmqContext,
+  ): Promise<User> {
+    const channel = context.getChannelRef();
+    const message = context.getMessage();
+
+    await channel.ack(message);
+
     const user = await this.usersService.create(data);
     return user;
   }
-
+  @EventPattern('list-users')
   @Get('/list')
-  async list(): Promise<User[]> {
-    const user = await this.usersService.list();
+  async list(@Payload() id: any, @Ctx() context: RmqContext): Promise<User[]> {
+    const channel = context.getChannelRef();
+    const message = context.getMessage();
+
+    await channel.ack(message);
+
+    const user = await this.usersService.list(id.id);
     return user;
   }
 

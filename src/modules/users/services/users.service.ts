@@ -3,6 +3,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { config } from 'dotenv';
 import RedisService from '../../../shared/redis/redis';
 import StringToDate from '../../../shared/utils/stringToDate';
@@ -35,19 +36,24 @@ export class UsersService {
         password: data.password,
         link_image: process.env.IMAGE_DEFAULT,
       };
-
+      const userverify = await this.usersRepository.findDocument(
+        createUser.document,
+      );
+      if (userverify) {
+        throw new RpcException('usuario ja cadastrado no sistema');
+      }
       const dataUser = await this.usersRepository.create(createUser);
       await this.redis.createKey(dataUser);
       return dataUser[0];
     } catch (error) {
-      throw new HttpException(
-        'Erro ao criar usuario: ' + error.message,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new RpcException('Erro ao criar usuario: ' + error.message);
     }
   }
 
-  async list(): Promise<User[]> {
+  async list(id: string): Promise<User[]> {
+    if (id !== null && id !== undefined && id !== '') {
+      return this.usersRepository.findOne(id)[0];
+    }
     const usersByRedis = await this.redis.getAllCustomers();
     const usersByDatabase = await this.usersRepository.list();
 

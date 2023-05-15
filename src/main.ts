@@ -1,16 +1,17 @@
 import { NestFactory } from '@nestjs/core';
+import { Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { AuthMiddleware } from './shared/decorators/middlewares/tokenValidation.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.createMicroservice(AppModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://admin:admin@localhost:5672'],
+      noAck: false,
+      queue: 'users-microservice',
+    },
+  });
 
-  app.use('/users/', new AuthMiddleware().use);
-  app.use('/users/list', new AuthMiddleware().use);
-  app.use('/users/update/:id', new AuthMiddleware().use);
-  app.use('/users/remove/:id', new AuthMiddleware().use);
-  app.use('/users/image/:id', new AuthMiddleware().use);
-
-  await app.listen(3000);
+  await app.listen();
 }
 bootstrap();
