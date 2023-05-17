@@ -13,6 +13,10 @@ import { CreateUser } from '../dtos/create.dto';
 import { User } from '../entities/users.entity';
 import { UsersRepository } from '../repositories/user.repositorie';
 
+interface messageError {
+  message: string;
+  statusCode: number;
+}
 config();
 @Injectable()
 export class UsersService {
@@ -23,7 +27,7 @@ export class UsersService {
     private uploadS3: StorageS3,
     private redis: RedisService,
   ) {}
-  async create(data: CreateUser): Promise<User> {
+  async create(data: CreateUser): Promise<User[] | messageError> {
     try {
       const address = await this.addressRepository.create(data.address);
       const date_birth = await this.stringToDate.convert(data.date_birth);
@@ -40,11 +44,13 @@ export class UsersService {
         createUser.document,
       );
       if (userverify) {
-        throw new RpcException('usuario ja cadastrado no sistema');
+        return { message: 'usuario ja cadastrado no sistema', statusCode: 409 };
       }
+
       const dataUser = await this.usersRepository.create(createUser);
       await this.redis.createKey(dataUser);
-      return dataUser[0];
+
+      return dataUser;
     } catch (error) {
       throw new RpcException('Erro ao criar usuario: ' + error.message);
     }

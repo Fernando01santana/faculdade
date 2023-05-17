@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+  rpc Create (CreateUser) returns (EmptyResponse) {}
+  rpc List (EmptyResponse) returns (stream User) {}
+  rpc Update (CreateUser) returns (User){}
+  rpc Remove(DeleteUserRequest) returns (EmptyResponse){}
+  rpc UploadImageProfile(UploadImageRequest) returns (UploadImageResponse){}
+  rpc RemoveImageProfile(RemoveImageRequest) returns(EmptyResponse){}
+}
+message User {
+  string id = 1;
+  string email = 2;
+  string document = 3;
+  string name = 4;
+  string password = 5;
+  string date_birth = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CreateUser {
+  string document = 1;
+  string email = 2;
+  string name = 3;
+  string password = 4;
+  string date_birth = 5;
+  CreateAddress address = 6;
+}
+
+message CreateAddress {
+  string street = 1;
+  string city = 2;
+  string state = 3;
+  string country = 4;
+  int64 postal_code = 5;
+}
+
+message Address {
+  string id = 1;
+  string street = 2;
+  string city = 3;
+  string state = 4;
+  string country = 5;
+  int64 postal_code = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+message DeleteUserRequest{
+  string id = 1;
+}
+
+message UploadImageRequest {
+  string user_id = 1;
+  bytes file = 2;
+}
+
+message UploadImageResponse {
+  string link = 1;
+}
+
+message RemoveImageRequest {
+  string id = 1;
+}
+message EmptyResponse {}

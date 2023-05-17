@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package address;
+
+message CreateAddress {
+  string street = 1;
+  string city = 2;
+  string state = 3;
+  string country = 4;
+  string postal_code = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+}
+
+message Address {
+  string id = 1;
+  string street = 2;
+  string city = 3;
+  string state = 4;
+  string country = 5;
+  int64 postal_code = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
+
+service AddressRepositorieService {
+  rpc Create (CreateAddress) returns (Address) {}
+  rpc Update (Address) returns (Address) {}
+  rpc FindOne (FindOneUser) returns (Address) {}
+}
+
+message FindOneUser {
+  string id = 1;
+}

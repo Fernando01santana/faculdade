@@ -9,11 +9,10 @@ import {
   Get,
   Param,
   Post,
-  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import { Ctx, GrpcMethod, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { CreateUser } from '../dtos/create.dto';
@@ -27,22 +26,22 @@ export class UsersController {
     private readonly awsService: StorageS3,
   ) {}
 
-  @EventPattern('create-user')
   @Post('/')
-  async create(
-    @Payload() data: CreateUser,
-    @Ctx() context: RmqContext,
-  ): Promise<User> {
-    const channel = context.getChannelRef();
-    const message = context.getMessage();
+  @GrpcMethod('UserService', 'Create')
+  async create(@Payload() data: CreateUser, @Ctx() context: RmqContext) {
+    try {
+      const channel = context.getChannelRef();
+      const message = context.getMessage();
 
-    await channel.ack(message);
-
-    const user = await this.usersService.create(data);
-    return user;
+      await this.usersService.create(data);
+      await channel.ack(message);
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
-  @EventPattern('list-users')
+
   @Get('/list')
+  @GrpcMethod('UserService', 'List')
   async list(@Payload() id: any, @Ctx() context: RmqContext): Promise<User[]> {
     const channel = context.getChannelRef();
     const message = context.getMessage();
@@ -53,18 +52,20 @@ export class UsersController {
     return user;
   }
 
-  @Put('/update/:id')
+  @GrpcMethod('UserService', 'Update')
   async update(@Body() data: CreateUser, @Param('id') id): Promise<User> {
     const user = await this.usersService.update(data, id);
     return user;
   }
 
-  @Delete('/remove/:id')
+  @Delete('/:id')
+  @GrpcMethod('UserService', 'Remove')
   async delete(@Param('id') id: string): Promise<void> {
     return this.usersService.remove(id);
   }
 
   @Post('/image/:id')
+  @GrpcMethod('UserService', 'UploadImageProfile')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
@@ -75,6 +76,7 @@ export class UsersController {
   }
 
   @Delete('/image/:id')
+  @GrpcMethod('UserService', 'RemoveImageProfile')
   async removeImage(@Param('id') id): Promise<void> {
     await this.usersService.removeImageProfile(id);
     return;

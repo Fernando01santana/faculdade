@@ -26,6 +26,8 @@
       "migration:revert": "npm run typeorm -- migration:revert"
    },
    "dependencies": {
+      "@grpc/grpc-js": "^1.8.14",
+      "@grpc/proto-loader": "^0.7.7",
       "@nestjs-modules/ioredis": "^1.0.1",
       "@nestjs/common": "^9.0.0",
       "@nestjs/config": "^2.3.1",
