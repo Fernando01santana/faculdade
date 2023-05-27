@@ -1,6 +1,8 @@
 export default class StringToDate {
   convert(data: string): Date {
     try {
+      console.log(data);
+
       const dateSplit = data.split('/');
       const dataFormtada =
         dateSplit[1] + '-' + dateSplit[0] + '-' + dateSplit[2];

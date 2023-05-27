@@ -4,12 +4,17 @@ package user;
 
 service UserService {
   rpc Create (CreateUser) returns (EmptyResponse) {}
-  rpc List (EmptyResponse) returns (stream User) {}
+  rpc List (EmptyResponse) returns (ListUsersResponse) {}
   rpc Update (CreateUser) returns (User){}
   rpc Remove(DeleteUserRequest) returns (EmptyResponse){}
   rpc UploadImageProfile(UploadImageRequest) returns (UploadImageResponse){}
   rpc RemoveImageProfile(RemoveImageRequest) returns(EmptyResponse){}
 }
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
 message User {
   string id = 1;
   string email = 2;
@@ -17,8 +22,8 @@ message User {
   string name = 4;
   string password = 5;
   string date_birth = 6;
-  string created_at = 7;
-  string updated_at = 8;
+  string link_image = 7;
+
 }
 
 message CreateUser {
@@ -34,8 +39,9 @@ message CreateAddress {
   string street = 1;
   string city = 2;
   string state = 3;
-  string country = 4;
-  int64 postal_code = 5;
+  string neighborhood = 4;
+  int64 zip_code = 5;
+  int64 number = 6;
 }
 
 message Address {
@@ -43,10 +49,12 @@ message Address {
   string street = 2;
   string city = 3;
   string state = 4;
-  string country = 5;
-  int64 postal_code = 6;
-  int64 created_at = 7;
-  int64 updated_at = 8;
+  string neighborhood = 5;
+  int64 zip_code = 6;
+  int64 number = 7;
+  string created_at = 8;
+  string updated_at = 9;
+
 }
 
 message DeleteUserRequest{

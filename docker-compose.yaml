@@ -16,9 +16,8 @@ services:
     command: ["sh","./start.sh"]
     depends_on:
       - db
-      - redis
-    networks:
-      - app-network
+    volumes:
+      - ./src:/usr/src/app/src
   
   db:
     image: postgres:alpine
@@ -31,17 +30,7 @@ services:
       - '55000:5432'
     volumes:
       - .docker/dbdata:/var/lib/postgresql/data
-    networks:
-      - app-network
-  redis:
-    image: redis
-    container_name: redis-faculdade
-    restart: always
+  grpc-test:
+    image: gusaul/grpcox:latest
     ports:
-      - '6379:6379'
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - 6969:6969

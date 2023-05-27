@@ -2,6 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
+import { ServerUnaryCall } from '@grpc/grpc-js';
 import {
   Body,
   Controller,
@@ -12,8 +13,9 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { Ctx, GrpcMethod, Payload, RmqContext } from '@nestjs/microservices';
+import { GrpcMethod } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Metadata } from 'aws-sdk/clients/appstream';
 import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { CreateUser } from '../dtos/create.dto';
 import { User } from '../entities/users.entity';
@@ -26,30 +28,18 @@ export class UsersController {
     private readonly awsService: StorageS3,
   ) {}
 
-  @Post('/')
   @GrpcMethod('UserService', 'Create')
-  async create(@Payload() data: CreateUser, @Ctx() context: RmqContext) {
-    try {
-      const channel = context.getChannelRef();
-      const message = context.getMessage();
-
-      await this.usersService.create(data);
-      await channel.ack(message);
-    } catch (error) {
-      throw new Error(error.message);
-    }
+  create(data, metadata: Metadata, call: ServerUnaryCall<any, any>) {
+    return this.usersService.create(data);
   }
 
-  @Get('/list')
   @GrpcMethod('UserService', 'List')
-  async list(@Payload() id: any, @Ctx() context: RmqContext): Promise<User[]> {
-    const channel = context.getChannelRef();
-    const message = context.getMessage();
+  @Get()
+  async list(metadata: Metadata, call: ServerUnaryCall<any, any>) {
+    const data = await this.usersService.list();
+    console.log(data);
 
-    await channel.ack(message);
-
-    const user = await this.usersService.list(id.id);
-    return user;
+    return data;
   }
 
   @GrpcMethod('UserService', 'Update')

@@ -3,9 +3,9 @@ https://docs.nestjs.com/providers#services
 */
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { config } from 'dotenv';
-import RedisService from '../../../shared/redis/redis';
+// import RedisService from '../../../shared/redis/redis';
 import StringToDate from '../../../shared/utils/stringToDate';
 import { StorageS3 } from '../../../shared/utils/uploadFile';
 import { AddressRepositorie } from '../../address/repositories/address.repositorie';
@@ -24,13 +24,24 @@ export class UsersService {
     private readonly usersRepository: UsersRepository,
     private readonly addressRepository: AddressRepositorie,
     private stringToDate: StringToDate,
-    private uploadS3: StorageS3,
-    private redis: RedisService,
+    private uploadS3: StorageS3, // private redis: RedisService,
   ) {}
-  async create(data: CreateUser): Promise<User[] | messageError> {
+  @GrpcMethod('UserService', 'Create')
+  async create(data): Promise<User[] | messageError> {
     try {
-      const address = await this.addressRepository.create(data.address);
-      const date_birth = await this.stringToDate.convert(data.date_birth);
+      console.log(data);
+
+      const dataAddress = {
+        city: data.address.city,
+        street: data.address.street,
+        state: data.address.state,
+        neighborhood: data.address.neighborhood,
+        zip_code: data.address.zipCode.toString(),
+        number: data.address.number.toString(),
+      };
+
+      const address = await this.addressRepository.create(dataAddress);
+      const date_birth = await this.stringToDate.convert(data.dateBirth);
       const createUser = {
         address_id: address,
         date_birth: date_birth,
@@ -48,7 +59,7 @@ export class UsersService {
       }
 
       const dataUser = await this.usersRepository.create(createUser);
-      await this.redis.createKey(dataUser);
+      // await this.redis.createKey(dataUser);
 
       return dataUser;
     } catch (error) {
@@ -56,27 +67,8 @@ export class UsersService {
     }
   }
 
-  async list(id: string): Promise<User[]> {
-    if (id !== null && id !== undefined && id !== '') {
-      return this.usersRepository.findOne(id)[0];
-    }
-    const usersByRedis = await this.redis.getAllCustomers();
-    const usersByDatabase = await this.usersRepository.list();
-
-    let users = [];
-    if (usersByRedis) {
-      for (let index = 0; index < usersByRedis.length; index++) {
-        const element = JSON.parse(usersByRedis[index]);
-        users.push(element);
-      }
-      return users;
-    }
-
-    for (let index = 0; index < usersByDatabase.length; index++) {
-      const element = usersByDatabase[index];
-      await this.redis.createKey(element);
-    }
-    return usersByDatabase;
+  async list(): Promise<User[]> {
+    return this.usersRepository.list();
   }
 
   async update(data: CreateUser, id: string): Promise<User> {

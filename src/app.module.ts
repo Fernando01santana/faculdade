@@ -1,4 +1,3 @@
-import { RedisModule } from '@nestjs-modules/ioredis';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from './config/typeOrmMudule';
@@ -12,13 +11,6 @@ import { UsersModule } from './modules/users/users.module';
     TypeOrmModule,
     UsersModule,
     AddresssModule,
-    RedisModule.forRootAsync({
-      useFactory: () => ({
-        config: {
-          url: 'redis://localhost:6379',
-        },
-      }),
-    }),
   ],
 })
 export class AppModule {}
